@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 import Head from 'next/head'
 import useSWR from 'swr'
 import styles from '@/pages/index.module.css'
 import { GetServerSideProps } from 'next'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { useEffect, useState } from 'react'
 interface User {
   id: number
@@ -50,6 +52,7 @@ interface ssData {
 const fetcher = (url: string) => axios.get(url).then((res) => res.data)
 
 export default function Home({ ssData }: { ssData: ssData }) {
+  const ranNumber = Math.random()
   const [appSettings, setAppSettings] = useState([])
   const { data, error } = useSWR(
     'https://jsonplaceholder.typicode.com/users',
@@ -58,34 +61,42 @@ export default function Home({ ssData }: { ssData: ssData }) {
   useEffect(() => {
     axios
       .post(`${ssData.valueEndpoint}/users`, {
-        firstName: 'string',
-        lastName: 'string',
-        email: 'string@gfh.com',
-        password: 'stringstri',
-        confirmedPassword: 'stringstri',
+        firstName: 'mustak',
+        lastName: 'san',
+        email: `mustak_${ranNumber}@gfh.com`,
+        password: `mustak10000000_${ranNumber}`,
+        confirmedPassword: `mustak10000000_${ranNumber}`,
         role: 'ADMIN',
       })
       .catch((error) => {
         console.log('Error in seperate error block', error)
       })
-      .finally(() => {
-        axios
-          .post(`${ssData.valueEndpoint}/auth/login`, {
-            email: 'string@gfh.com',
-            password: 'stringstri',
-          })
-          .then(fetchAppSettings)
+      .finally(async () => {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const result: AxiosResponse<any, any> = await axios.post(
+            `${ssData.valueEndpoint}/auth/login`,
+            {
+              email: `mustak_${ranNumber}@gfh.com`,
+              password: `mustak10000000_${ranNumber}`,
+            }
+          )
+          await fetchAppSettings(result)
+        } catch (error) {
+          console.log('error', error)
+        }
       })
   }, [])
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let valueApiError: any
   /***
    * IMP:
    * Please increase server env var for token expiration period
    */
-  const fetchAppSettings = async ({ data: { access_token } }) => {
+  const fetchAppSettings = async (result: any): Promise<void> => {
     const data = await axios.get(`${ssData.valueEndpoint}/app-settings`, {
-      headers: { Authorization: 'Bearer ' + access_token },
+      headers: { Authorization: 'Bearer ' + result?.data?.access_token },
     })
     console.log('After fetcher:', data.data)
     setAppSettings(data.data)

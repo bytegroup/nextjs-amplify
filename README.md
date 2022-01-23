@@ -25,4 +25,3 @@ To Lint the code, run the following command:
 ```bash
 yarn lint
 ```
-# nextjs-amplify
