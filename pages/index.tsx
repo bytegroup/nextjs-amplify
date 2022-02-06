@@ -75,10 +75,10 @@ export default function Home({ ssData }: { ssData: ssData }) {
         try {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const result: AxiosResponse<any, any> = await axios.post(
-            `${ssData.valueEndpoint}/auth/login`,
+            `${ssData.valueEndpoint}/v1/auth/login`,
             {
-              email: `mustak_${ranNumber}@gfh.com`,
-              password: `mustak10000000_${ranNumber}`,
+              email: `mizanur.rahman@venturas-bd.com`,
+              password: `1234567890`,
             }
           )
           await fetchAppSettings(result)
@@ -95,7 +95,7 @@ export default function Home({ ssData }: { ssData: ssData }) {
    * Please increase server env var for token expiration period
    */
   const fetchAppSettings = async (result: any): Promise<void> => {
-    const data = await axios.get(`${ssData.valueEndpoint}/app-settings`, {
+    const data = await axios.get(`${ssData.valueEndpoint}/v1/app-settings`, {
       headers: { Authorization: 'Bearer ' + result?.data?.access_token },
     })
     console.log('After fetcher:', data.data)
